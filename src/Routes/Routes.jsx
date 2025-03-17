@@ -41,14 +41,7 @@ const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  {
-    path: "/filebulk-upload",
-    element: (
-      <Suspense fallback={Spinner}>
-        <FileBulkUpload />
-      </Suspense>
-    ),
-  },
+
   {
     path: "/filehandling",
     element: (
@@ -57,22 +50,7 @@ const router = createBrowserRouter([
       </Suspense>
     ),
   },
-  {
-    path: "/texttofile",
-    element: (
-      <Suspense fallback={Spinner}>
-        <Texttofile />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/fileuploadtable",
-    element: (
-      <Suspense fallback={Spinner}>
-        <FileUploadTable />
-      </Suspense>
-    ),
-  },
+
   {
     path: "/dashboard",
     element: (
