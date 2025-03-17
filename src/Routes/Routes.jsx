@@ -5,7 +5,9 @@ import { lazy, Suspense } from "react";
 // Lazy-loaded components
 const Auth = lazy(() => import("../Components/Auth/Auth"));
 const Home = lazy(() => import("../Components/Home/Home"));
-
+const FileBulkUpload = lazy(() =>
+  import("../Components/FileBulkUpload/FileBulkUpload")
+);
 const Filehandling = lazy(() =>
   import("../Components/FileHandling/Filehandling")
 );
@@ -36,7 +38,14 @@ const router = createBrowserRouter([
       </Suspense>
     ),
   },
-
+  {
+    path: "/filebulk-upload",
+    element: (
+      <Suspense fallback={Spinner}>
+        <FileBulkUpload />
+      </Suspense>
+    ),
+  },
   {
     path: "/filehandling",
     element: (
