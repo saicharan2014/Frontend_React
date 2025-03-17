@@ -5,16 +5,11 @@ import { lazy, Suspense } from "react";
 // Lazy-loaded components
 const Auth = lazy(() => import("../Components/Auth/Auth"));
 const Home = lazy(() => import("../Components/Home/Home"));
-const FileBulkUpload = lazy(() =>
-  import("../Components/FileBulkUpload/FileBulkUpload")
-);
+
 const Filehandling = lazy(() =>
   import("../Components/FileHandling/Filehandling")
 );
-const FileUploadTable = lazy(() =>
-  import("../Components/FiledataExtract/FileDataExtract")
-);
-const Texttofile = lazy(() => import("../Components/Texttofile/Texttofile"));
+
 const DashBoard = lazy(() => import("../Components/Dashboard/Dashboard"));
 
 // Spinner animation
