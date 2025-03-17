@@ -17,7 +17,8 @@ export default function Home() {
   const [uploadingFile, setUploadingFile] = useState(null);
   const [cookies] = useCookies(["user"]); // Get the user cookie
   const navigate = useNavigate();
-  const S3_UPLOAD_URL = "http://localhost:5000/upload";
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
     // Check if user exists in cookies
     if (!cookies.user) {
@@ -87,7 +88,7 @@ export default function Home() {
     const formData = new FormData();
     formData.append("files", fileObj.file);
     try {
-      await axios.post(S3_UPLOAD_URL, formData, {
+      await axios.post(`${API_BASE_URL}/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success(`${fileObj.file.name} uploaded successfully!`);
