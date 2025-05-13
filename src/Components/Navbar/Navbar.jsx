@@ -16,50 +16,33 @@ const Navbar = () => {
     setIsLoggedIn(!!cookies.user);
   }, [cookies]);
 
-  // const handleLogout = () => {
-  //   removeCookie("user", { path: "/" });
-  //   console.log("logged out");
-
-  //   if (window.google && window.google.accounts) {
-  //     window.google.accounts.id.disableAutoSelect();
-  //     console.log("Google User signed out.");
-  //   }
-
-  //   if (window.firebase) {
-  //     window.firebase
-  //       .auth()
-  //       .signOut()
-  //       .then(() => console.log("Firebase User signed out."))
-  //       .catch((error) => console.error("Firebase Logout Error:", error));
-  //   }
-
-  //   setIsLoggedIn(false);
-  //   navigate("/auth");
-  // };
-
   const handleLogout = async () => {
     try {
-      // 1. Remove cookie
-      removeCookie("user", { path: "/" });
-      console.log("Cookie removed");
+      // 1. Remove your app cookie
+      removeCookie("user", {
+        path: "/",
+        domain: "frontend-react-4whe.vercel.app",
+        secure: true,
+        sameSite: "none",
+      });
 
-      // 2. Google Sign-Out
+      // 2. Clear Google cookies
+      document.cookie =
+        "SSID=; path=/; domain=.google.com; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie =
+        "G_ENABLED_IDPS=google; path=/; domain=.google.com; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
+      // 3. Google Sign-Out
       if (window.google?.accounts?.id) {
-        try {
-          window.google.accounts.id.disableAutoSelect();
-          window.google.accounts.id.revoke();
-          console.log("Google user session revoked");
-        } catch (googleError) {
-          console.error("Google logout error:", googleError);
-        }
+        window.google.accounts.id.disableAutoSelect();
+        window.google.accounts.id.revoke();
       }
 
-      // 3. Firebase Sign-Out (modern approach)
-      // Import from 'firebase/auth'
-      await signOut(auth);
-      console.log("Firebase user signed out");
+      // 4. Firebase Sign-Out
 
-      // 4. Update state and redirect
+      await signOut(auth);
+
+      // 5. Update state and redirect
       setIsLoggedIn(false);
       navigate("/auth");
     } catch (error) {
