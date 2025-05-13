@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useCookies } from "react-cookie";
 import { Menu, X } from "lucide-react";
+import { auth } from "../../FirebaseConfig/firebase";
+import { signOut } from "firebase/auth";
 
 const Navbar = () => {
   const [cookies, removeCookie] = useCookies(["user"]);
@@ -14,27 +16,56 @@ const Navbar = () => {
     setIsLoggedIn(!!cookies.user);
   }, [cookies]);
 
-  const handleLogout = () => {
-    removeCookie("user", { path: "/" });
-    console.log("logged out");
+  // const handleLogout = () => {
+  //   removeCookie("user", { path: "/" });
+  //   console.log("logged out");
 
-    if (window.google && window.google.accounts) {
-      window.google.accounts.id.disableAutoSelect();
-      console.log("Google User signed out.");
+  //   if (window.google && window.google.accounts) {
+  //     window.google.accounts.id.disableAutoSelect();
+  //     console.log("Google User signed out.");
+  //   }
+
+  //   if (window.firebase) {
+  //     window.firebase
+  //       .auth()
+  //       .signOut()
+  //       .then(() => console.log("Firebase User signed out."))
+  //       .catch((error) => console.error("Firebase Logout Error:", error));
+  //   }
+
+  //   setIsLoggedIn(false);
+  //   navigate("/auth");
+  // };
+
+  const handleLogout = async () => {
+    try {
+      // 1. Remove cookie
+      removeCookie("user", { path: "/" });
+      console.log("Cookie removed");
+
+      // 2. Google Sign-Out
+      if (window.google?.accounts?.id) {
+        try {
+          window.google.accounts.id.disableAutoSelect();
+          window.google.accounts.id.revoke();
+          console.log("Google user session revoked");
+        } catch (googleError) {
+          console.error("Google logout error:", googleError);
+        }
+      }
+
+      // 3. Firebase Sign-Out (modern approach)
+      // Import from 'firebase/auth'
+      await signOut(auth);
+      console.log("Firebase user signed out");
+
+      // 4. Update state and redirect
+      setIsLoggedIn(false);
+      navigate("/auth");
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
-
-    if (window.firebase) {
-      window.firebase
-        .auth()
-        .signOut()
-        .then(() => console.log("Firebase User signed out."))
-        .catch((error) => console.error("Firebase Logout Error:", error));
-    }
-
-    setIsLoggedIn(false);
-    navigate("/auth");
   };
-
   return (
     <nav className="bg-transparent p-4 fixed w-full top-0 left-0 z-50">
       <div className="container mx-auto flex justify-between items-center px-4">
