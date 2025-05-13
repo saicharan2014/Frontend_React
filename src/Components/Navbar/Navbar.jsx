@@ -23,29 +23,37 @@ const Navbar = () => {
       await signOut(auth);
       console.log("Firebase signout successful");
 
-      // 2. Clear the user cookie
+      // 2. Clear the user cookie - improved version
+      const domainParts = window.location.hostname.split(".");
+      const rootDomain =
+        domainParts.length > 1
+          ? `.${domainParts.slice(-2).join(".")}`
+          : domainParts[0];
+
       removeCookie("user", {
         path: "/",
-        domain: window.location.hostname, // Ensure cookie is removed from the correct domain
+        domain: rootDomain, // Use root domain for broader coverage
       });
 
-      // 3. Handle Google signout if applicable
+      // 3. Clear all possible auth-related cookies from your domain
+      document.cookie.split(";").forEach((cookie) => {
+        const name = cookie.split("=")[0].trim();
+        document.cookie = `${name}=; path=/; domain=${rootDomain}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      });
+
+      // 4. Handle Google signout if applicable
       if (window.google?.accounts?.id) {
         try {
           window.google.accounts.id.disableAutoSelect();
           window.google.accounts.id.revoke(auth.currentUser?.email, () => {
             console.log("Google consent revoked");
           });
+          // Add Google One-Tap signout
+          window.google.accounts.id.prompt();
         } catch (googleError) {
           console.error("Google signout error:", googleError);
         }
       }
-
-      // 4. Clear any remaining Google auth cookies
-      document.cookie =
-        "SSID=; path=/; domain=.google.com; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      document.cookie =
-        "G_ENABLED_IDPS=google; path=/; domain=.google.com; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 
       // 5. Clear local state and redirect
       toast.success("Logged out successfully");
