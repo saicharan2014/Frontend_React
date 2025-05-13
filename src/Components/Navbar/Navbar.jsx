@@ -5,6 +5,7 @@ import { useCookies } from "react-cookie";
 import { Menu, X } from "lucide-react";
 import { auth } from "../../FirebaseConfig/firebase";
 import { signOut } from "firebase/auth";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [cookies, removeCookie] = useCookies(["user"]);
@@ -18,35 +19,43 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      // 1. Remove your app cookie
+      // 1. Sign out from Firebase
+      await signOut(auth);
+      console.log("Firebase signout successful");
+
+      // 2. Clear the user cookie
       removeCookie("user", {
         path: "/",
-        domain: "frontend-react-4whe.vercel.app",
-        secure: true,
-        sameSite: "none",
+        domain: window.location.hostname, // Ensure cookie is removed from the correct domain
       });
 
-      // 2. Clear Google cookies
+      // 3. Handle Google signout if applicable
+      if (window.google?.accounts?.id) {
+        try {
+          window.google.accounts.id.disableAutoSelect();
+          window.google.accounts.id.revoke(auth.currentUser?.email, () => {
+            console.log("Google consent revoked");
+          });
+        } catch (googleError) {
+          console.error("Google signout error:", googleError);
+        }
+      }
+
+      // 4. Clear any remaining Google auth cookies
       document.cookie =
         "SSID=; path=/; domain=.google.com; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       document.cookie =
         "G_ENABLED_IDPS=google; path=/; domain=.google.com; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 
-      // 3. Google Sign-Out
-      if (window.google?.accounts?.id) {
-        window.google.accounts.id.disableAutoSelect();
-        window.google.accounts.id.revoke();
-      }
-
-      // 4. Firebase Sign-Out
-
-      await signOut(auth);
-
-      // 5. Update state and redirect
-      setIsLoggedIn(false);
+      // 5. Clear local state and redirect
+      toast.success("Logged out successfully");
       navigate("/auth");
+
+      // Optional: Force refresh to ensure clean state
+      window.location.reload();
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error("Logout error:", error);
+      toast.error("Logout failed: " + error.message);
     }
   };
   return (
