@@ -38,6 +38,8 @@ export default function Home() {
     multiple: true,
     onDrop: (acceptedFiles) => {
       const previews = acceptedFiles.map((file) => {
+
+
         return new Promise((resolve) => {
           const reader = new FileReader();
           const fileUrl = URL.createObjectURL(file);

@@ -16,6 +16,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     removeCookie("user", { path: "/" });
+    console.log("logged out");
 
     if (window.google && window.google.accounts) {
       window.google.accounts.id.disableAutoSelect();
