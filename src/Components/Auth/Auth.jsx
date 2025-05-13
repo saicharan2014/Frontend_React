@@ -115,7 +115,7 @@ const Auth = () => {
 
       setCookie("user", user.email, { path: "/", maxAge: 86400 });
       toast.success("Google Sign-In Successful");
-      setTimeout(() => navigate("/"), 1500);
+      setTimeout(() => navigate("/auth"), 1500);
     } catch (error) {
       toast.error("Google Sign-In Failed: " + error.message);
     }
