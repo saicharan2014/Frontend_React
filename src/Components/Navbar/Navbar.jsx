@@ -50,9 +50,6 @@ const Navbar = () => {
       // 5. Clear local state and redirect
       toast.success("Logged out successfully");
       navigate("/auth");
-
-      // Optional: Force refresh to ensure clean state
-      window.location.reload();
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Logout failed: " + error.message);
