@@ -53,7 +53,6 @@ const Navbar = () => {
 
       // 5. Redirect and force reload
       navigate("/auth");
-      window.location.reload(); // Ensures all auth state is cleared
 
       toast.success("Logged out successfully");
     } catch (error) {
