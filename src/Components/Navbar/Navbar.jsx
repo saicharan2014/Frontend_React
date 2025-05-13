@@ -23,41 +23,39 @@ const Navbar = () => {
       await signOut(auth);
       console.log("Firebase signout successful");
 
-      // 2. Clear the user cookie - improved version
-      const domainParts = window.location.hostname.split(".");
-      const rootDomain =
-        domainParts.length > 1
-          ? `.${domainParts.slice(-2).join(".")}`
-          : domainParts[0];
+      // 2. Clear all cookies from your Vercel domain
+      const domain = "frontend-react-4whe.vercel.app";
+      const cookieNames = ["user", "session", "token"]; // Add other cookie names you use
 
-      removeCookie("user", {
-        path: "/",
-        domain: rootDomain, // Use root domain for broader coverage
+      // Clear specific cookies
+      cookieNames.forEach((name) => {
+        document.cookie = `${name}=; path=/; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
       });
 
-      // 3. Clear all possible auth-related cookies from your domain
-      document.cookie.split(";").forEach((cookie) => {
-        const name = cookie.split("=")[0].trim();
-        document.cookie = `${name}=; path=/; domain=${rootDomain}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-      });
-
-      // 4. Handle Google signout if applicable
+      // 3. Handle Google signout more effectively
       if (window.google?.accounts?.id) {
         try {
+          // Full Google signout procedure
           window.google.accounts.id.disableAutoSelect();
-          window.google.accounts.id.revoke(auth.currentUser?.email, () => {
+          window.google.accounts.id.revoke(auth?.currentUser?.email, () => {
             console.log("Google consent revoked");
+            // Force Google to show sign-in prompt again next time
+            window.google.accounts.id.prompt();
           });
-          // Add Google One-Tap signout
-          window.google.accounts.id.prompt();
         } catch (googleError) {
           console.error("Google signout error:", googleError);
         }
       }
 
-      // 5. Clear local state and redirect
-      toast.success("Logged out successfully");
+      // 4. Clear local storage if used
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // 5. Redirect and force reload
       navigate("/auth");
+      window.location.reload(); // Ensures all auth state is cleared
+
+      toast.success("Logged out successfully");
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Logout failed: " + error.message);
